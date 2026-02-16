@@ -1,0 +1,47 @@
+name: Run Tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build API
+        run: dotnet build api/api.csproj -c Release
+
+      - name: Start API
+        run: dotnet run --project api/api.csproj --urls http://localhost:5276 &
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install client deps
+        run: npm ci
+        working-directory: api/client
+
+      - name: Start Angular
+        run: npx ng serve --port 4200 &
+        working-directory: api/client
+
+      - name: Wait for servers
+        run: |
+          npx wait-on http://localhost:5276/api/tfn/history http://localhost:4200 --timeout 60000
+        working-directory: api/client
+
+      - name: Install Playwright
+        run: npx playwright install chromium
+        working-directory: api/client
+
+      - name: Run E2E tests
+        run: npx playwright test --reporter=list
+        working-directory: api/client

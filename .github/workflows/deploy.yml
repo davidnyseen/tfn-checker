@@ -1,0 +1,99 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build API
+        run: dotnet build api/api.csproj -c Release
+
+      - name: Start API
+        run: dotnet run --project api/api.csproj --urls http://localhost:5276 &
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install client deps
+        run: npm ci
+        working-directory: api/client
+
+      - name: Start Angular
+        run: npx ng serve --port 4200 &
+        working-directory: api/client
+
+      - name: Wait for servers
+        run: |
+          npx wait-on http://localhost:5276/api/tfn/history http://localhost:4200 --timeout 60000
+        working-directory: api/client
+
+      - name: Install Playwright
+        run: npx playwright install chromium
+        working-directory: api/client
+
+      - name: Run E2E tests
+        run: npx playwright test --reporter=list
+        working-directory: api/client
+
+  deploy-api:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - run: dotnet publish api/api.csproj -c Release -o ./publish
+
+      - uses: azure/webapps-deploy@v3
+        with:
+          app-name: tfn-checker-api
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+          package: ./publish
+
+  deploy-client:
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm ci
+        working-directory: api/client
+
+      - run: npx ng build --configuration production --base-href /tfn-checker/
+        working-directory: api/client
+
+      - uses: actions/configure-pages@v4
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: api/client/dist/client/browser
+
+      - uses: actions/deploy-pages@v4
+        id: deployment

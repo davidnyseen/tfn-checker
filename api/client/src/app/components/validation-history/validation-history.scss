@@ -1,0 +1,37 @@
+.history-card {
+  max-width: 480px;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.clear-btn {
+  background: none;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  cursor: pointer;
+}
+
+.empty { color: #888; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+  }
+}
+
+.mono { font-family: monospace; }
+
+.badge {
+  &.valid { color: green; }
+  &.invalid { color: red; }
+}

@@ -1,0 +1,13 @@
+**/bin/**
+obj/
+publish/
+*.db
+*.zip
+node_modules/
+dist/
+.angular/
+.vs/
+.vscode/
+*.user
+Thumbs.db
+.DS_Store

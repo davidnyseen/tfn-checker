@@ -1,0 +1,37 @@
+<div class="history-card">
+  <div class="history-header">
+    <h3>Validation History</h3>
+    @if (records.length > 0) {
+      <button (click)="clearHistory()" class="clear-btn">Clear</button>
+    }
+  </div>
+
+  @if (records.length === 0) {
+    <p class="empty">No validations yet.</p>
+  }
+
+  @if (records.length > 0) {
+    <table>
+      <thead>
+        <tr>
+          <th>TFN</th>
+          <th>Result</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (r of records; track r.id) {
+          <tr>
+            <td class="mono">{{ r.maskedTfn }}</td>
+            <td>
+              <span class="badge" [class.valid]="r.isValid" [class.invalid]="!r.isValid">
+                {{ r.isValid ? 'Valid' : 'Invalid' }}
+              </span>
+            </td>
+            <td>{{ r.validatedAt | date:'short' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

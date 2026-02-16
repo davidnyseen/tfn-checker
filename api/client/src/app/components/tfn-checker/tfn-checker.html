@@ -1,0 +1,37 @@
+<div class="checker-card">
+  <h2>TFN Checker</h2>
+  <div class="input-group">
+    <input
+      type="text"
+      [(ngModel)]="tfnInput"
+      (input)="formatTfn()"
+      placeholder="Enter TFN (e.g. 123 456 782)"
+      maxlength="11"
+    />
+    <button (click)="validate()" [disabled]="loading || tfnInput.length < 11">
+      {{ loading ? 'Validating...' : 'Validate' }}
+    </button>
+  </div>
+
+  @if (result) {
+    <div class="result" [class.valid]="result.isValid" [class.invalid]="!result.isValid">
+      <div class="result-text">
+        <strong>{{ result.isValid ? 'Valid TFN' : 'Invalid TFN' }}</strong>
+        <span class="masked">{{ result.tfn }}</span>
+      </div>
+      @if (result.errors.length > 0) {
+        <ul>
+          @for (err of result.errors; track err) {
+            <li>{{ err }}</li>
+          }
+        </ul>
+      }
+    </div>
+  }
+
+  @if (error) {
+    <div class="result invalid">
+      <div class="result-text">{{ error }}</div>
+    </div>
+  }
+</div>
