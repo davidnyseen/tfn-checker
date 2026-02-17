@@ -19,9 +19,9 @@ dotnet run
 ```
 Runs on http://localhost:5276
 
-**Client:**
+**Frontend:**
 ```bash
-cd api/client
+cd client
 npm install
 npx ng serve
 ```
@@ -35,6 +35,22 @@ Runs on http://localhost:4200
 ```
 
 **Frontend** — push to `master` and GitHub Actions handles it.
+
+## Test TFNs
+
+**Valid**
+| TFN | |
+|---|---|
+| 123 456 782 | |
+| 876 543 210 | |
+| 246 813 575 | |
+
+**Invalid**
+| TFN | Reason |
+|---|---|
+| 123 456 789 | Fails checksum |
+| 111 111 111 | Fails checksum |
+| 123 456 78 | Too short |
 
 ## API
 

@@ -23,16 +23,16 @@ jobs:
           node-version: '20'
 
       - run: npm ci
-        working-directory: api/client
+        working-directory: client
 
       - run: npx ng build --configuration production --base-href /tfn-checker/
-        working-directory: api/client
+        working-directory: client
 
       - uses: actions/configure-pages@v4
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: api/client/dist/client/browser
+          path: client/dist/client/browser
 
       - uses: actions/deploy-pages@v4
         id: deployment

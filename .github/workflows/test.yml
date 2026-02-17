@@ -14,6 +14,9 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Run unit tests
+        run: dotnet test api.Tests/api.Tests.csproj -c Release
+
       - name: Build API
         run: dotnet publish api/api.csproj -c Release -o ./api-publish
 
@@ -28,21 +31,21 @@ jobs:
 
       - name: Install client deps
         run: npm ci
-        working-directory: api/client
+        working-directory: client
 
       - name: Start Angular
         run: npx ng serve --port 4200 &
-        working-directory: api/client
+        working-directory: client
 
       - name: Wait for servers
         run: |
           npx wait-on http://localhost:5276/api/tfn/history http://localhost:4200 --timeout 120000
-        working-directory: api/client
+        working-directory: client
 
       - name: Install Playwright
         run: npx playwright install chromium
-        working-directory: api/client
+        working-directory: client
 
       - name: Run E2E tests
         run: npx playwright test --reporter=list
-        working-directory: api/client
+        working-directory: client

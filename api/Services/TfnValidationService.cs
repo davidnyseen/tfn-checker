@@ -70,6 +70,8 @@ public class TfnValidationService : ITfnValidationService
         await _db.SaveChangesAsync();
     }
 
+    // Checksum algorithm as defined by the ATO:
+    // https://en.wikipedia.org/wiki/Tax_file_number#Check_digit_validation
     private static bool PassesChecksumValidation(string digits)
     {
         int sum = 0;
