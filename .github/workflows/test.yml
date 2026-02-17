@@ -15,10 +15,10 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Build API
-        run: dotnet build api/api.csproj -c Release
+        run: dotnet publish api/api.csproj -c Release -o ./api-publish
 
       - name: Start API
-        run: dotnet run --project api/api.csproj --urls http://localhost:5276 &
+        run: dotnet ./api-publish/api.dll --urls http://localhost:5276 &
         env:
           ASPNETCORE_ENVIRONMENT: Development
 
@@ -36,7 +36,7 @@ jobs:
 
       - name: Wait for servers
         run: |
-          npx wait-on http://localhost:5276/api/tfn/history http://localhost:4200 --timeout 60000
+          npx wait-on http://localhost:5276/api/tfn/history http://localhost:4200 --timeout 120000
         working-directory: api/client
 
       - name: Install Playwright
