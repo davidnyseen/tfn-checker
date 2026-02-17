@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { TfnService } from '../../services/tfn.service';
@@ -15,7 +15,7 @@ export class ValidationHistoryComponent implements OnInit, OnDestroy {
   records: ValidationRecord[] = [];
   private sub!: Subscription;
 
-  constructor(private tfnService: TfnService) {}
+  constructor(private tfnService: TfnService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadHistory();
@@ -28,14 +28,14 @@ export class ValidationHistoryComponent implements OnInit, OnDestroy {
 
   loadHistory(): void {
     this.tfnService.getHistory().subscribe({
-      next: (data) => { this.records = data; },
-      error: () => this.records = []
+      next: (data) => { this.records = data; this.cdr.detectChanges(); },
+      error: () => { this.records = []; this.cdr.detectChanges(); }
     });
   }
 
   clearHistory(): void {
     this.tfnService.clearHistory().subscribe({
-      next: () => { this.records = []; }
+      next: () => { this.records = []; this.cdr.detectChanges(); }
     });
   }
 }
