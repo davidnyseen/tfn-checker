@@ -1,4 +1,4 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TfnService } from '../../services/tfn.service';
@@ -17,7 +17,7 @@ export class TfnCheckerComponent {
   loading = false;
   error = '';
 
-  constructor(private tfnService: TfnService, private cdr: ChangeDetectorRef) {}
+  constructor(private tfnService: TfnService) {}
 
   formatTfn(): void {
     const digits = this.tfnInput.replace(/\D/g, '').slice(0, 9);
@@ -35,7 +35,6 @@ export class TfnCheckerComponent {
         this.result = res;
         this.loading = false;
         this.tfnService.notifyHistoryUpdate();
-        this.cdr.detectChanges();
       },
       error: () => {
         this.error = 'Failed to connect to the API.';
